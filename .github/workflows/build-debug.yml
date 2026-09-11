@@ -1,7 +1,22 @@
 name: Build Debug APK
+run-name: "Build Debug APK ${{ inputs.leg || github.event_name }} ${{ inputs.racecar_run }}"
 
 on:
   workflow_dispatch:
+    inputs:
+      leg:
+        description: "baseline (uninstrumented) or instrumented (under chalk/curiosity)"
+        type: choice
+        options: [instrumented, baseline]
+        default: baseline
+      profile:
+        description: "CrashOverride chalk profile"
+        type: string
+        default: curiosity-tests-racecar
+      racecar_run:
+        description: "racecar correlation token, echoed into the run name"
+        type: string
+        default: ""
   push:
     branches: [master]
     paths:
@@ -19,6 +34,7 @@ on:
       - '.github/workflows/build-debug.yml'
 
 env:
+  CHALK_ON: ${{ inputs.leg == 'instrumented' }}
   SOURCE_APK_URL: https://github.com/Producdevity/gamehub-lite/releases/download/v5.1.0-patch/GameHub-5.1.0.apk
   SOURCE_APK_MD5: 42db81116bf3c74e52e6f6afb4ec9f91
   APKTOOL_VERSION: "2.12.1"
